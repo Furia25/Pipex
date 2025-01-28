@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:41:21 by val               #+#    #+#             */
-/*   Updated: 2025/01/28 13:34:50 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/01/28 14:21:19 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,35 +103,6 @@ char	*find_command(char *command, char **envp)
 	return (NULL);
 }
 
-int	pipex(char *cmd1, char *cmd2, char **envp)
-{
-	pid_t	cpid1;
-	pid_t	cpid2;
-	int		status;
-	int		pipefd[2];
-
-	if (pipe(pipefd) == -1)
-		return (0);
-	cpid1 = execute(cmd1);
-	if (cpid1 < 0)
-	{
-		close(pipefd[0]);
-		close(pipefd[1]);
-		return (perror("Fork"), 0);
-	}
-	cpid2 = execute(cmd2);
-	if (cpid2 < 0)
-	{
-		close(pipefd[0]);
-		close(pipefd[1]);
-		return (perror("Fork"), 0);
-	}
-	waitpid(cpid2, &status, 0);
-	kill(cpid1, SIGTERM);
-	close(pipefd[0]);
-	close(pipefd[1]);
-}
-
 int	parse_commands(char **cmds, char **names, char **envp)
 {
 	char 	*temp;
@@ -161,10 +132,39 @@ static void	free_data(char **cmds, int (*pipes)[2])
 	free(pipes);
 }
 
-void	close_pipes(int (*pipes)[2], size_t index)
+void	close_pipes(int (*pipes)[2], size_t count)
 {
-	
+	size_t	index;
+
+	index = 0;
+	while (index < count)
+	{
+		close(pipes[index][0]);
+		close(pipes[index][1]);
+		index++;
+	}
+	return ;
 }
+
+void	close_pipes_except(int (*pipes)[2], size_t i, size_t count)
+{
+	size_t	index;
+
+	index = 0;
+	while (index < count)
+	{
+		if (index == i)
+		{
+			index++;
+			continue;
+		}
+		close(pipes[index][0]);
+		close(pipes[index][1]);
+		index++;
+	}
+	return ;
+}
+
 int	create_pipes(int (*pipes)[2], size_t count)
 {
 	size_t	index;
@@ -172,7 +172,7 @@ int	create_pipes(int (*pipes)[2], size_t count)
 	index = 0;
 	while (index < count)
 	{
-		if (pipe(pipes[index] == -1))
+		if (pipe(pipes[index]) == -1)
 		{
 			close_pipes(pipes, index);
 			return (perror("Pipes"), 0);
@@ -182,21 +182,44 @@ int	create_pipes(int (*pipes)[2], size_t count)
 	return (1);
 }
 
+int	pipex(char **cmds, int (*pipes)[2], size_t count, char **envp)
+{
+	size_t	index;
+	pid_t	pid;
+
+	index = 0;
+	while(cmds[index])
+	{
+		pid = fork();
+		if (pid == -1)
+			return (perror("fork"), close_pipes(pipes, count), 0);
+		if (pid == 0)
+		{
+			close_pipes_except(pipes, index, count);
+			
+			execve(cmds[index], "", envp);
+			perror("Execve");
+			exit(EXIT_FAILURE);
+		}
+		index++;
+	}
+	close_pipes(pipes, count);
+	return (1);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	size_t	index;
-	int		infile;
+	int		here_doc;
 	int		(*pipes)[2];
 	char	**cmds;
 
 	if (argc < 5)
 		return (ft_putstr_fd(ERROR_USAGE, 2), EXIT_FAILURE);
 	index = 2;
-	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
-	{
-		read_heredoc(argv[2]);
+	here_doc = ft_strncmp(argv[1], "here_doc", 8) == 0;
+	if (here_doc)
 		index = 3;
-	}
 	cmds = ft_calloc(argc - index, sizeof(char *));
 	if (!cmds)
 		return (perror("malloc"), EXIT_FAILURE);
@@ -205,8 +228,9 @@ int	main(int argc, char **argv, char **envp)
 	pipes = ft_calloc(argc - index, sizeof(int[2]));
 	if (!pipes)
 		return (free_data(cmds, pipes), perror("Malloc"), EXIT_FAILURE);
-	if (!create_pipes(pipes))
+	if (!create_pipes(pipes, argc - index))
 		return (free_data(cmds, pipes), perror("Pipes"), EXIT_FAILURE);
+	pipex(cmds, pipes, argc - index);
 	unlink(TEMP_PATH);
     return (free_data(cmds, pipes), EXIT_SUCCESS);
 }
