@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: val <val@student.42.fr>                    +#+  +:+       +#+         #
+#    By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/13 23:20:17 by val               #+#    #+#              #
-#    Updated: 2025/01/22 16:48:27 by val              ###   ########.fr        #
+#    Updated: 2025/01/27 12:46:04 by vdurand          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ SRC = $(shell find $(SRC_DIR) -type f -name "*.c")
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
 CC = gcc
-CFLAGS = $(OPTIFLAGS) -Werror -Wextra -Wall
+CFLAGS = $(OPTIFLAGS) -Wextra -Wall
 FTFLAGS = -L$(LIBFT_DIR) -lft
 LDFLAGS = $(FTFLAGS)
 INCLUDES = -I$(INC_DIR) -I$(LIBFT_DIR)
