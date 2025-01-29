@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 17:31:18 by vdurand           #+#    #+#             */
-/*   Updated: 2025/01/29 18:05:57 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/01/29 18:29:07 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,32 +25,59 @@ void	free_chartab(char **tab)
 	free(tab);
 }
 
-t_list	*smart_split(char *str, char c)
+static int	smart_cwords(char *str, char c)
 {
-	t_list	*result;
-	t_list	*temp;
-	char	*token;
+	int		result;
 	size_t	index;
 
-	result = ft_lstnew(NULL);
-	if (!result)
-		return (NULL);
+	result = 0;
 	while (*str)
 	{
 		while (*str && *str == c)
-            str++;
+			str++;
 		if (*str == '\0')
-            break;
+			break ;
 		index = 0;
 		while(str[index] && str[index] != c)
 			index++;
+		result += 1;
+		str += index;
+	}
+	return (result);
+}
+
+char	**smart_split(char *str, char c)
+{
+	char	**result;
+	char	*token;
+	size_t	iword;
+	size_t	index;
+
+	result = ft_calloc(smart_cwords(str, c) + 1, sizeof(char *));
+	if (!result)
+		return (NULL);
+	iword = 0;
+	while (*str)
+	{
+		while (*str && *str == c)
+			str++;
+		if (*str == '\0')
+			break ;
+		index = 0;
+		while(str[index] && str[index] != c)
+		{
+			if (str[index] == '"')
+			{
+				index++;
+				while (str[index] && str[index] != '"')
+					index++;
+			}
+			index++;
+		}
 		token = ft_substr(str, 0, index);
 		if (!token)
-			return (ft_lstclear(&result, free), NULL);
-		temp = ft_lstnew(token);
-		if (!temp)
-			return (free(token), ft_lstclear(&result, free), NULL);
-		ft_lstadd_back(&result, temp);
+			return (free_chartab(result), NULL);
+		result[iword++] = token;
 		str += index;
 	}
 	return (result);

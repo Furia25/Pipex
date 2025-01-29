@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:41:21 by val               #+#    #+#             */
-/*   Updated: 2025/01/29 18:05:01 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/01/29 18:28:44 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,18 +165,17 @@ void	pipex(int argc, char *argv[], char *envp[], int index)
 	pipe_and_process(argv[index], envp, &last_fd, 1);
 }
 
-void	testprint(void *te)
-{
-	ft_printf("|%s| \n", te);
-}
-
 int	main(int argc, char **argv, char **envp)
 {
 	int		index;
-	t_list	*test;
+	char	**test;
 	
-	test = smart_split("    ", ' ');
-	ft_lstiter(test, testprint);
+	test = smart_split("test sdg dsg d d  d d \"petit arcenciel\" dsdsds", ' ');
+	while (*test)
+	{
+		printf("|%s|\n", *test);
+		test++;
+	}
 	if (argc < 5)
 		return (ft_putstr_fd(ERROR_USAGE, 2), EXIT_FAILURE);
 	index = 2;
