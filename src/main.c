@@ -6,14 +6,11 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:41:21 by val               #+#    #+#             */
-/*   Updated: 2025/01/29 17:00:13 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/01/29 18:05:01 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <sys/wait.h>
-#include <signal.h>
-#include <sys/types.h>
 
 int	open_file(char *path, int mode, int index)
 {
@@ -66,19 +63,6 @@ int	read_heredoc(char *limiter)
 	free(heredoc);
 	close(file);
 	return (1);
-}
-
-void	free_chartab(char **tab)
-{
-	size_t	index;
-
-	index = 0;
-	while (tab[index])
-	{
-		free(tab[index]);
-		index++;
-	}
-	free(tab);
 }
 
 char	*find_command(char *command, char **envp)
@@ -181,10 +165,18 @@ void	pipex(int argc, char *argv[], char *envp[], int index)
 	pipe_and_process(argv[index], envp, &last_fd, 1);
 }
 
+void	testprint(void *te)
+{
+	ft_printf("|%s| \n", te);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	int		index;
-
+	t_list	*test;
+	
+	test = smart_split("    ", ' ');
+	ft_lstiter(test, testprint);
 	if (argc < 5)
 		return (ft_putstr_fd(ERROR_USAGE, 2), EXIT_FAILURE);
 	index = 2;

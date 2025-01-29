@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:46:50 by val               #+#    #+#             */
-/*   Updated: 2025/01/29 13:21:48 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/01/29 17:53:31 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,10 @@
 # include <stdlib.h>
 # include <fcntl.h>
 # include <stdio.h>
+# include <sys/wait.h>
+# include <signal.h>
+# include <sys/types.h>
+
 //
 # define TEMP_PATH	"./.tmp_heredoc"
 # define ERROR_USAGE	"Error: Not enough arguments. \
@@ -27,4 +31,6 @@
 # define ERROR_HEREDOC_USAGE	"Error: Not enough arguments. \
 	Usage: pipex here_doc <limiter> <argument1> <argument2> <outfile>...\n"
 //
+void	free_chartab(char **tab);
+t_list	*smart_split(char *str, char c);
 #endif
