@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
+/*   By: val <val@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:46:50 by val               #+#    #+#             */
-/*   Updated: 2025/01/29 18:14:59 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/01/30 17:59:17 by val              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FDF_H
-# define FDF_H
+#ifndef PIPEX_H
+# define PIPEX_H
 
 # include "libft.h"
 # include "ft_printf.h"
@@ -33,4 +33,8 @@
 //
 void	free_chartab(char **tab);
 char	**smart_split(char *str, char c);
+char	*ft_nstrjoin(char *freable, const char *s2);
+int		open_file(char *path, int mode, int index);
+int		read_heredoc(char *limiter);
+
 #endif
