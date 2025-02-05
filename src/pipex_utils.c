@@ -6,7 +6,7 @@
 /*   By: val <val@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 17:58:21 by val               #+#    #+#             */
-/*   Updated: 2025/01/30 17:59:34 by val              ###   ########.fr       */
+/*   Updated: 2025/02/05 17:50:35 by val              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ int	read_heredoc(char *limiter)
 		if (ft_strncmp(heredoc, limiter, limiter_length) == 0)
 			break ;
 		ft_putstr_fd(heredoc, file);
+		free(heredoc);
 	}
 	free(heredoc);
 	close(file);

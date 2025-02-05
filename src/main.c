@@ -6,7 +6,7 @@
 /*   By: val <val@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:41:21 by val               #+#    #+#             */
-/*   Updated: 2025/01/30 17:59:04 by val              ###   ########.fr       */
+/*   Updated: 2025/02/05 17:53:26 by val              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	cmd_execute(char *cmd, char **envp)
 
 	temp = smart_split(cmd, ' ');
 	if (!temp)
-		return (0);
+		return (perror("Malloc"), 0);
 	result = find_command(temp[0], envp);
 	if (!result)
 	{
@@ -57,7 +57,7 @@ int	cmd_execute(char *cmd, char **envp)
 		if (error_temp)
 			ft_putstr_fd(error_temp, 2);
 		free(error_temp);
-		free(temp);
+		free_chartab(temp);
 		return (0);
 	}
 	execve(result, temp, envp);
@@ -87,7 +87,7 @@ int	pipe_and_process(char *cmd, char **envp, int *lastfd, int last)
 			dup2(ppipe[1], STDOUT_FILENO);
 		close(ppipe[1]);
 		if (!cmd_execute(cmd, envp))
-			return ((void) close(*lastfd), 0);
+			return ((void) close(*lastfd), exit(127), 0);
 	}
 	close(ppipe[1]);
 	close(*lastfd);
@@ -95,7 +95,7 @@ int	pipe_and_process(char *cmd, char **envp, int *lastfd, int last)
 	return (1);
 }
 
-void	pipex(int argc, char *argv[], char *envp[], int index)
+int	pipex(int argc, char *argv[], char *envp[], int index)
 {
 	int		last_fd;
 	int		infile_fd;
@@ -103,17 +103,19 @@ void	pipex(int argc, char *argv[], char *envp[], int index)
 
 	infile_fd = open_file(argv[1], 0, index);
 	if (infile_fd == -1)
-		return (perror("File"), exit(EXIT_FAILURE));
+		return (perror("File 1"), exit(EXIT_FAILURE), 1);
 	outfile_fd = open_file(argv[argc - 1], 2, 0);
 	if (outfile_fd == -1)
-		return (close(infile_fd), perror("File"), exit(EXIT_FAILURE));
+		return (close(infile_fd), perror("File 2"), exit(EXIT_FAILURE), 1);
 	last_fd = infile_fd;
 	while (index < argc - 2)
 		if (!pipe_and_process(argv[index++], envp, &last_fd, 0))
-			return ;
+			return (0);
 	dup2(outfile_fd, STDOUT_FILENO);
 	if (!pipe_and_process(argv[index], envp, &last_fd, 1))
-		return ;
+		return (0);
+	close(last_fd);
+	return (1);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -131,7 +133,8 @@ int	main(int argc, char **argv, char **envp)
 			exit(EXIT_FAILURE);
 		index = 3;
 	}
-	pipex(argc, argv, envp, index);
+	if (!pipex(argc, argv, envp, index))
+		return (EXIT_FAILURE);
 	while (wait(NULL) > 0)
 		;
 	unlink(TEMP_PATH);
