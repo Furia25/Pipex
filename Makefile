@@ -6,7 +6,7 @@
 #    By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/13 23:20:17 by val               #+#    #+#              #
-#    Updated: 2025/01/29 17:48:22 by vdurand          ###   ########.fr        #
+#    Updated: 2025/02/06 16:28:57 by vdurand          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,24 +20,39 @@ BG_GREEN = \033[42m
 NAME = pipex
 
 SRC_DIR = src
+MAIN_DIR = src_main
 OBJ_DIR = obj
 INC_DIR = includes
 LIBFT_DIR = libft
 
 SRC = $(shell find $(SRC_DIR) -type f -name "*.c")
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
+MAIN = $(MAIN_DIR)/main.c
+MAIN_BONUS = $(MAIN_DIR)/main_bonus.c
+
+ifeq ($(MAKECMDGOALS),bonus)
+	MAIN = $(MAIN_DIR)/main_bonus.c
+endif
+
+MAIN_OBJ = $(OBJ_DIR)/$(notdir $(MAIN:.c=.o))
 
 CC = gcc
-CFLAGS = $(OPTIFLAGS) -Wextra -Wall
+CFLAGS = -Werror -Wextra -Wall
 FTFLAGS = -L$(LIBFT_DIR) -lft
 LDFLAGS = $(FTFLAGS)
 INCLUDES = -I$(INC_DIR) -I$(LIBFT_DIR)
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(LIBFT_DIR)/libft.a
+bonus: $(NAME)
+
+$(NAME): $(OBJ) $(MAIN_OBJ) $(LIBFT_DIR)/libft.a
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	@echo "$(BG_GREEN)>>> Program $(NAME) compiled!$(RESET)"
+
+$(MAIN_OBJ): $(MAIN)
+	@echo "$(BLUE)>>> Compiling $(MAIN)...$(RESET)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $(MAIN) -o $(MAIN_OBJ)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile $(INC_DIR)/*.h | $(OBJ_DIR)
 	@echo "$(BLUE)>>> Compiling $<...$(RESET)"
