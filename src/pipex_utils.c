@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 17:58:21 by val               #+#    #+#             */
-/*   Updated: 2025/02/06 15:33:31 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/06 16:35:21 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int	cmd_execute(char *cmd, char **envp)
 	result = find_command(temp[0], envp);
 	if (!result)
 	{
-		error_temp = ft_strjoin(temp[0], "command not found");
+		error_temp = ft_strjoin(temp[0], " command not found");
 		if (error_temp)
 			ft_putstr_fd(error_temp, 2);
 		free(error_temp);
