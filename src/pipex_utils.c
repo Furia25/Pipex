@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 17:58:21 by val               #+#    #+#             */
-/*   Updated: 2025/02/06 16:35:21 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/10 18:48:18 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,10 +102,10 @@ int	pipe_and_process(char *cmd, char **envp, int *lastfd, int last)
 	pid_t	pid;
 
 	if (pipe(ppipe) == -1)
-		exit(EXIT_FAILURE);
+		return (perror("Pipe"), close(*lastfd), 0);
 	pid = fork();
 	if (pid == -1)
-		return (perror("fork"), 0);
+		return (perror("Fork"), close(*lastfd), 0);
 	if (pid == 0)
 	{
 		dup2(*lastfd, STDIN_FILENO);
@@ -138,10 +138,11 @@ int	pipex(int argc, char *argv[], char *envp[], int index)
 	last_fd = infile_fd;
 	while (index < argc - 2)
 		if (!pipe_and_process(argv[index++], envp, &last_fd, 0))
-			return (0);
+			return (close(outfile_fd), 0);
 	dup2(outfile_fd, STDOUT_FILENO);
 	if (!pipe_and_process(argv[index], envp, &last_fd, 1))
-		return (0);
+		return (close(outfile_fd), 0);
 	close(last_fd);
+	close(outfile_fd);
 	return (1);
 }
