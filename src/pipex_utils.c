@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 17:58:21 by val               #+#    #+#             */
-/*   Updated: 2025/02/10 19:15:49 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/10 19:26:25 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,16 +85,17 @@ int	cmd_execute(char *cmd, char **envp)
 		result = find_command_path(temp[0], envp);
 	if (!result)
 	{
-		error_temp = ft_strjoin(temp[0], " command not found");
+		ft_putstr_fd("\033[41m\"", 2);
+		error_temp = ft_strjoin(temp[0], "\" command not found!");
 		if (error_temp)
 			ft_putstr_fd(error_temp, 2);
+		ft_putstr_fd("\033[0m\n", 2);
 		return (free(error_temp), free_chartab(temp), 0);
 	}
 	execve(result, temp, envp);
 	perror("Execve");
 	free_chartab(temp);
-	free(result);
-	return (exit(EXIT_FAILURE), 0);
+	return (free(result), exit(EXIT_FAILURE), 0);
 }
 
 int	pipe_and_process(char *cmd, char **envp, int *lastfd, int last)
