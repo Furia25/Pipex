@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:41:21 by val               #+#    #+#             */
-/*   Updated: 2025/02/06 16:04:56 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/10 19:17:33 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int	main(int argc, char **argv, char **envp)
 		return (EXIT_FAILURE);
 	while (wait(NULL) > 0)
 		;
-	unlink(TEMP_PATH);
+	if (access(TEMP_PATH, W_OK | F_OK) == 0)
+		unlink(TEMP_PATH);
 	return (EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 17:58:21 by val               #+#    #+#             */
-/*   Updated: 2025/02/10 18:48:18 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/10 19:15:49 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,14 @@ int	read_heredoc(char *limiter)
 	return (1);
 }
 
-char	*find_command(char *command, char **envp)
+char	*find_command_path(char *command, char **envp)
 {
 	size_t	index;
 	char	**paths;
 	char	*path;
 
 	index = 0;
-	while (!ft_strncmp(envp[index], "PATH", 4) == 0)
+	while (envp[index] && !ft_strncmp(envp[index], "PATH", 4) == 0)
 		index++;
 	if (!envp[index])
 		return (NULL);
@@ -78,22 +78,23 @@ int	cmd_execute(char *cmd, char **envp)
 	temp = smart_split(cmd, ' ');
 	if (!temp)
 		return (perror("Malloc"), 0);
-	result = find_command(temp[0], envp);
+	result = NULL;
+	if (access(temp[0], F_OK | X_OK) == 0)
+		result = temp[0];
+	else if (envp[0])
+		result = find_command_path(temp[0], envp);
 	if (!result)
 	{
 		error_temp = ft_strjoin(temp[0], " command not found");
 		if (error_temp)
 			ft_putstr_fd(error_temp, 2);
-		free(error_temp);
-		free_chartab(temp);
-		return (0);
+		return (free(error_temp), free_chartab(temp), 0);
 	}
 	execve(result, temp, envp);
 	perror("Execve");
 	free_chartab(temp);
 	free(result);
-	exit(EXIT_FAILURE);
-	return (0);
+	return (exit(EXIT_FAILURE), 0);
 }
 
 int	pipe_and_process(char *cmd, char **envp, int *lastfd, int last)
