@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
+/*   By: val <val@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 17:58:21 by val               #+#    #+#             */
-/*   Updated: 2025/02/10 19:41:04 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/10 23:32:19 by val              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,12 +142,13 @@ int	pipex(int argc, char *argv[], char *envp[], int index)
 	last_fd = infile_fd;
 	while (index < argc - 2)
 		if (!pipe_and_process(argv[index++], envp, &last_fd, 0))
-			return (close(last_fd), close(outfile_fd), 0);
+			return (close(outfile_fd), 0);
 	if (dup2(outfile_fd, STDOUT_FILENO) == -1)
 		return (perror("Dup"), close(last_fd), close(outfile_fd), 0);
 	if (!pipe_and_process(argv[index], envp, &last_fd, 1))
-		return (close(last_fd), close(outfile_fd), 0);
-	close(last_fd);
+		return (close(outfile_fd), 0);
+	else
+		close(last_fd);
 	close(outfile_fd);
 	return (1);
 }
