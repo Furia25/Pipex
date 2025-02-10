@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 17:58:21 by val               #+#    #+#             */
-/*   Updated: 2025/02/10 19:26:25 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/10 19:41:04 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,30 +98,32 @@ int	cmd_execute(char *cmd, char **envp)
 	return (free(result), exit(EXIT_FAILURE), 0);
 }
 
-int	pipe_and_process(char *cmd, char **envp, int *lastfd, int last)
+int	pipe_and_process(char *cmd, char **envp, int *lfd, int last)
 {
-	int		ppipe[2];
+	int		pip[2];
 	pid_t	pid;
 
-	if (pipe(ppipe) == -1)
-		return (perror("Pipe"), close(*lastfd), 0);
+	if (pipe(pip) == -1)
+		return (perror("Pipe"), close(*lfd), 0);
 	pid = fork();
 	if (pid == -1)
-		return (perror("Fork"), close(*lastfd), 0);
+		return (perror("Fork"), close(*lfd), 0);
 	if (pid == 0)
 	{
-		dup2(*lastfd, STDIN_FILENO);
-		close(*lastfd);
-		close(ppipe[0]);
+		if (dup2(*lfd, STDIN_FILENO) == -1)
+			return (perror("Dup"), close(*lfd), close(pip[0]), close(pip[1]), 0);
+		close(*lfd);
+		close(pip[0]);
 		if (!last)
-			dup2(ppipe[1], STDOUT_FILENO);
-		close(ppipe[1]);
+			if (dup2(pip[1], STDOUT_FILENO) == -1)
+				return (perror("Dup"), close(pip[1]), 0);
+		close(pip[1]);
 		if (!cmd_execute(cmd, envp))
-			return ((void) close(*lastfd), exit(127), 0);
+			return (exit(127), 0);
 	}
-	close(ppipe[1]);
-	close(*lastfd);
-	*lastfd = ppipe[0];
+	close(pip[1]);
+	close(*lfd);
+	*lfd = pip[0];
 	return (1);
 }
 
@@ -140,10 +142,11 @@ int	pipex(int argc, char *argv[], char *envp[], int index)
 	last_fd = infile_fd;
 	while (index < argc - 2)
 		if (!pipe_and_process(argv[index++], envp, &last_fd, 0))
-			return (close(outfile_fd), 0);
-	dup2(outfile_fd, STDOUT_FILENO);
+			return (close(last_fd), close(outfile_fd), 0);
+	if (dup2(outfile_fd, STDOUT_FILENO) == -1)
+		return (perror("Dup"), close(last_fd), close(outfile_fd), 0);
 	if (!pipe_and_process(argv[index], envp, &last_fd, 1))
-		return (close(outfile_fd), 0);
+		return (close(last_fd), close(outfile_fd), 0);
 	close(last_fd);
 	close(outfile_fd);
 	return (1);
