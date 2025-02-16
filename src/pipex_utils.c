@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 17:58:21 by val               #+#    #+#             */
-/*   Updated: 2025/02/13 16:31:52 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/16 17:05:23 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,12 +111,12 @@ int	pipe_and_process(char *cmd, char **envp, int *lfd, int last)
 	if (pid == 0)
 	{
 		if (dup2(*lfd, STDIN_FILENO) == -1)
-			return (perror("Dup"), close(*lfd), close(pip[0]), close(pip[1]), 0);
+			return (perror("D2"), close(*lfd), close(pip[0]), close(pip[1]), 0);
 		close(*lfd);
 		close(pip[0]);
 		if (!last)
 			if (dup2(pip[1], STDOUT_FILENO) == -1)
-				return (perror("Dup"), close(pip[1]), 0);
+				return (perror("Dup2"), close(pip[1]), 0);
 		close(pip[1]);
 		if (!cmd_execute(cmd, envp))
 			return (exit(127), 0);
