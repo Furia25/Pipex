@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 13:38:31 by vdurand           #+#    #+#             */
-/*   Updated: 2025/02/20 15:22:04 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/20 18:14:23 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,17 @@ static char	*find_command_path(char *command, char **envp)
 	return (NULL);
 }
 
+static char	*find_command(char *cmd, char **envp)
+{
+	if (!cmd)
+		return (NULL);
+	if (access(cmd, F_OK | X_OK | R_OK) == 0)
+		return (cmd);
+	else if (envp && envp[0])
+		return(find_command_path(cmd, envp));
+	return (NULL);
+}
+
 static int	cmd_execute(char *cmd, char **envp)
 {
 	char	**temp;
@@ -81,11 +92,7 @@ static int	cmd_execute(char *cmd, char **envp)
 	temp = smart_split(cmd, ' ');
 	if (!temp)
 		return (perror("Malloc"), 0);
-	result = NULL;
-	if (access(temp[0], F_OK | X_OK) == 0)
-		result = temp[0];
-	else if (envp && envp[0])
-		result = find_command_path(temp[0], envp);
+	result = find_command(temp[0], envp);
 	if (!result)
 	{
 		ft_putstr_fd("\033[41m\"", 2);
@@ -95,8 +102,10 @@ static int	cmd_execute(char *cmd, char **envp)
 		free_chartab(temp);
 		return (0);
 	}
-	execve(result, temp, envp);
-	perror("Execve");
-	free_chartab(temp);
-	return (free(result), exit(EXIT_FAILURE), 0);
+	if (execve(result, temp, envp) == -1)
+	{
+		perror("Execve");
+		free_chartab(temp);
+	}
+	return (0);
 }
