@@ -6,32 +6,69 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:41:21 by val               #+#    #+#             */
-/*   Updated: 2025/02/10 19:17:39 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/20 14:43:05 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
+static int	get_temp_heredoc(char *name);
+static void	rm_file(char *name);
+
 int	main(int argc, char **argv, char **envp)
 {
-	int	index;
+	char	hd_name[10];
 
+	hd_name[0] = '\0';
 	if (argc < 5)
 		return (ft_putstr_fd(ERROR_USAGE, 2), EXIT_FAILURE);
-	index = 2;
 	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
 	{
 		if (argc < 6)
 			return (ft_putstr_fd(ERROR_HEREDOC_USAGE, 2), EXIT_FAILURE);
-		if (!read_heredoc(argv[2]))
+		if (!get_temp_heredoc(hd_name))
+			return (perror("Here_doc File"), EXIT_FAILURE);
+		if (!read_heredoc(argv[2], hd_name))
 			exit(EXIT_FAILURE);
-		index = 3;
+		if (!pipex(argc, argv, envp, hd_name))
+			return (rm_file(hd_name), EXIT_FAILURE);
 	}
-	if (!pipex(argc, argv, envp, index))
-		return (EXIT_FAILURE);
+	else
+		if (!pipex(argc, argv, envp, NULL))
+			return (EXIT_FAILURE);
 	while (wait(NULL) > 0)
 		;
-	if (access(TEMP_PATH, W_OK | F_OK) == 0)
-		unlink(TEMP_PATH);
+	if (hd_name[0])
+		rm_file(hd_name);
 	return (EXIT_SUCCESS);
+}
+
+static int	get_temp_heredoc(char *name)
+{
+	int				i;
+	int				fd;
+	unsigned char	rand_bytes[9];
+
+	if (access(SYSRANDOM, F_OK | R_OK) != 0)
+		return (0);
+	fd = open(SYSRANDOM, O_RDONLY);
+	if (fd == -1)
+		return (0);
+	if (read(fd, rand_bytes, 9) <= 0)
+		return (0);
+	close(fd);
+	i = 0;
+	while (i < 9)
+	{
+		name[i] = 'a' + (rand_bytes[i] % 26);
+		i++;
+	}
+	name[9] = '\0';
+	return (1);
+}
+
+static void	rm_file(char *name)
+{
+	if (access(name, W_OK | F_OK) == 0)
+		unlink(name);
 }

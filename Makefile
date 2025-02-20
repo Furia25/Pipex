@@ -6,7 +6,7 @@
 #    By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/13 23:20:17 by val               #+#    #+#              #
-#    Updated: 2025/02/06 16:28:57 by vdurand          ###   ########.fr        #
+#    Updated: 2025/02/20 13:43:24 by vdurand          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,9 @@ OBJ_DIR = obj
 INC_DIR = includes
 LIBFT_DIR = libft
 
-SRC = $(shell find $(SRC_DIR) -type f -name "*.c")
+SRC = $(SRC_DIR)/pipex.c \
+	$(SRC_DIR)/exec.c \
+	$(SRC_DIR)/parsing.c
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 MAIN = $(MAIN_DIR)/main.c
 MAIN_BONUS = $(MAIN_DIR)/main_bonus.c
