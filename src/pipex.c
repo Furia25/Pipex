@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 15:33:49 by vdurand           #+#    #+#             */
-/*   Updated: 2025/02/20 14:36:35 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/20 17:34:10 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,16 +54,16 @@ int	read_heredoc(char *limiter, char *file_name)
 	if (file == -1)
 		return (perror("Open"), 0);
 	limiter_length = ft_strlen(limiter);
-	while (1)
+	ft_putstr_fd("\e[32;47mheredoc >\e[0m ", 2);
+	heredoc = get_next_line(STDIN_FILENO);
+	while (heredoc)
 	{
 		ft_putstr_fd("\e[32;47mheredoc >\e[0m ", 2);
-		heredoc = get_next_line(0);
-		if (!heredoc)
-			break ;
 		if (ft_strncmp(heredoc, limiter, limiter_length) == 0)
 			break ;
 		ft_putstr_fd(heredoc, file);
 		free(heredoc);
+		heredoc = get_next_line(STDIN_FILENO);
 	}
 	free(heredoc);
 	close(file);

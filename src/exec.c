@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 13:38:31 by vdurand           #+#    #+#             */
-/*   Updated: 2025/02/20 14:43:38 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/20 15:22:04 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ static char	*find_command_path(char *command, char **envp)
 static int	cmd_execute(char *cmd, char **envp)
 {
 	char	**temp;
-	char	*error_temp;
 	char	*result;
 
 	temp = smart_split(cmd, ' ');
@@ -85,16 +84,16 @@ static int	cmd_execute(char *cmd, char **envp)
 	result = NULL;
 	if (access(temp[0], F_OK | X_OK) == 0)
 		result = temp[0];
-	else if (envp[0])
+	else if (envp && envp[0])
 		result = find_command_path(temp[0], envp);
 	if (!result)
 	{
 		ft_putstr_fd("\033[41m\"", 2);
-		error_temp = ft_strjoin(temp[0], "\" command not found!");
-		if (error_temp)
-			ft_putstr_fd(error_temp, 2);
-		ft_putstr_fd("\033[0m\n", 2);
-		return (free(error_temp), free_chartab(temp), 0);
+		if (temp[0])
+			ft_putstr_fd(temp[0], 2);
+		ft_putstr_fd("\" command not found!\033[0m\n", 2);
+		free_chartab(temp);
+		return (0);
 	}
 	execve(result, temp, envp);
 	perror("Execve");
