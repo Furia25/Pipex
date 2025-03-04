@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
+/*   By: val <val@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 13:38:31 by vdurand           #+#    #+#             */
-/*   Updated: 2025/02/20 18:14:23 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/03/04 13:22:51 by val              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ static char	*find_command(char *cmd, char **envp)
 	if (access(cmd, F_OK | X_OK | R_OK) == 0)
 		return (cmd);
 	else if (envp && envp[0])
-		return(find_command_path(cmd, envp));
+		return (find_command_path(cmd, envp));
 	return (NULL);
 }
 
