@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 13:38:31 by vdurand           #+#    #+#             */
-/*   Updated: 2025/03/05 15:14:40 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/03/05 15:29:44 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,12 @@ int	pipe_and_process(char *cmd, char **envp, int *lfd, int last)
 		return (full_return("Fork", 0, *lfd, -1));
 	if (pid == 0)
 	{
-		if (dup2(*lfd, STDIN_FILENO) == -1)
+		if (dup2(*lfd, STDIN_FILENO) != -1)
 			exit_child("Dup2", pip[0], pip[1], *lfd);
 		close(*lfd);
 		close(pip[0]);
 		if (!last)
-			if (dup2(pip[1], STDOUT_FILENO) != -1)
+			if (dup2(pip[1], STDOUT_FILENO) == -1)
 				exit_child("Dup2", -1, pip[1], -1);
 		close(pip[1]);
 		if (!cmd_execute(cmd, envp))
