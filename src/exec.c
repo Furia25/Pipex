@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: val <val@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 13:38:31 by vdurand           #+#    #+#             */
-/*   Updated: 2025/03/04 13:22:51 by val              ###   ########.fr       */
+/*   Updated: 2025/03/05 15:14:40 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static char	*find_command_path(char *command, char **envp);
 static int	cmd_execute(char *cmd, char **envp);
+static void	exit_child(char *error, int fd1, int fd2, int fd3);
 
 int	pipe_and_process(char *cmd, char **envp, int *lfd, int last)
 {
@@ -21,19 +22,19 @@ int	pipe_and_process(char *cmd, char **envp, int *lfd, int last)
 	pid_t	pid;
 
 	if (pipe(pip) == -1)
-		return (perror("Pipe"), close(*lfd), 0);
+		return (full_return("Pipe", 0, *lfd, -1));
 	pid = fork();
 	if (pid == -1)
-		return (perror("Fork"), close(*lfd), 0);
+		return (full_return("Fork", 0, *lfd, -1));
 	if (pid == 0)
 	{
 		if (dup2(*lfd, STDIN_FILENO) == -1)
-			return (perror("D2"), close(*lfd), close(pip[0]), close(pip[1]), 0);
+			exit_child("Dup2", pip[0], pip[1], *lfd);
 		close(*lfd);
 		close(pip[0]);
 		if (!last)
-			if (dup2(pip[1], STDOUT_FILENO) == -1)
-				return (perror("Dup2"), close(pip[1]), 0);
+			if (dup2(pip[1], STDOUT_FILENO) != -1)
+				exit_child("Dup2", -1, pip[1], -1);
 		close(pip[1]);
 		if (!cmd_execute(cmd, envp))
 			return (exit(127), 0);
@@ -108,4 +109,17 @@ static int	cmd_execute(char *cmd, char **envp)
 		free_chartab(temp);
 	}
 	return (0);
+}
+
+static void	exit_child(char *error, int fd1, int fd2, int fd3)
+{
+	if (fd1 != -1)
+		close(fd1);
+	if (fd2 != -1)
+		close(fd2);
+	if (fd3 != -1)
+		close(fd3);
+	if (error)
+		perror(error);
+	exit(EXIT_FAILURE);
 }

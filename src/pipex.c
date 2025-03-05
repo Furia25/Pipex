@@ -6,14 +6,13 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 15:33:49 by vdurand           #+#    #+#             */
-/*   Updated: 2025/02/24 13:35:55 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/03/05 14:37:35 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
 static int	open_file(char *path, int mode, int *index, char *file);
-static int	full_return(char *str, int code, int fd1, int fd2);
 static int	perror_return(char *str, int code);
 
 int	pipex(int argc, char *argv[], char *envp[], char *name)
@@ -99,7 +98,7 @@ static int	perror_return(char *str, int code)
 	return (code);
 }
 
-static int	full_return(char *str, int code, int fd1, int fd2)
+int	full_return(char *str, int code, int fd1, int fd2)
 {
 	if (fd1 != -1)
 		close(fd1);

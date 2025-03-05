@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:46:50 by val               #+#    #+#             */
-/*   Updated: 2025/02/20 14:26:10 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/03/05 14:37:44 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,6 @@ char	*ft_nstrjoin(char *freable, const char *s2);
 int		read_heredoc(char *limiter, char *file_name);
 int		pipex(int argc, char *argv[], char *envp[], char *name);
 int		pipe_and_process(char *cmd, char **envp, int *lfd, int last);
+int		full_return(char *str, int code, int fd1, int fd2);
 
 #endif

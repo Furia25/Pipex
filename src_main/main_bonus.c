@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:41:21 by val               #+#    #+#             */
-/*   Updated: 2025/02/20 17:53:39 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/02/24 13:23:23 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ static void	rm_file(char *name);
 int	main(int argc, char **argv, char **envp)
 {
 	char	hd_name[15];
+	int		exit_code;
 
 	hd_name[0] = '\0';
 	if (argc < 5)
@@ -30,17 +31,15 @@ int	main(int argc, char **argv, char **envp)
 			return (perror("Here_doc File"), EXIT_FAILURE);
 		if (!read_heredoc(argv[2], hd_name))
 			exit(EXIT_FAILURE);
-		if (!pipex(argc, argv, envp, hd_name))
-			return (rm_file(hd_name), EXIT_FAILURE);
+		exit_code = pipex(argc, argv, envp, hd_name);
 	}
 	else
-		if (!pipex(argc, argv, envp, NULL))
-			return (EXIT_FAILURE);
+		exit_code = pipex(argc, argv, envp, NULL);
 	while (wait(NULL) > 0)
 		;
 	if (hd_name[0] != '\0')
 		rm_file(hd_name);
-	return (EXIT_SUCCESS);
+	return (exit_code);
 }
 
 static int	get_temp_heredoc(char *name)
