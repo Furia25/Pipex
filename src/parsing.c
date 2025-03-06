@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 17:31:18 by vdurand           #+#    #+#             */
-/*   Updated: 2025/02/20 13:42:55 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/03/06 18:09:42 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,13 @@ char	*ft_nstrjoin(char *freable, const char *s2)
 	char	*result;
 
 	if (!freable)
+	{
+		perror("Cmd Search");
 		return (NULL);
+	}
 	result = ft_strjoin(freable, s2);
 	free(freable);
+	if (!result)
+		perror("Cmd Search");
 	return (result);
 }

@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 15:33:49 by vdurand           #+#    #+#             */
-/*   Updated: 2025/03/05 14:37:35 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/03/06 17:58:11 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,26 +19,26 @@ int	pipex(int argc, char *argv[], char *envp[], char *name)
 {
 	int		last_fd;
 	int		infile_fd;
-	int		outfile_fd;
+	int		out_fd;
 	int		index;
 
 	index = 2;
 	infile_fd = open_file(argv[1], 0, &index, name);
 	if (infile_fd == -1)
 		return (perror_return("File 1", 0));
-	outfile_fd = open_file(argv[argc - 1], 2, &index, name);
-	if (outfile_fd == -1)
+	out_fd = open_file(argv[argc - 1], 2, &index, name);
+	if (out_fd == -1)
 		return (full_return("File 2", 0, infile_fd, -1));
 	last_fd = infile_fd;
 	while (index < argc - 2)
-		if (pipe_and_process(argv[index++], envp, &last_fd, 0) != 1)
-			return (full_return("Exec", 127, outfile_fd, last_fd));
-	if (dup2(outfile_fd, STDOUT_FILENO) == -1)
-		return (full_return("Dup", 1, outfile_fd, last_fd));
-	if (pipe_and_process(argv[index], envp, &last_fd, 1) != 1)
-		return (full_return("Exec", 127, outfile_fd, last_fd));
+		if (exec_pipe(argv[index++], envp, &last_fd, (t_pinfo){0, out_fd}) != 1)
+			return (full_return("Exec", 127, out_fd, last_fd));
+	if (dup2(out_fd, STDOUT_FILENO) == -1)
+		return (full_return("Dup", 1, out_fd, last_fd));
+	if (exec_pipe(argv[index], envp, &last_fd, (t_pinfo){1, out_fd}) != 1)
+		return (full_return("Exec Last", 127, out_fd, last_fd));
 	close(last_fd);
-	close(outfile_fd);
+	close(out_fd);
 	return (EXIT_SUCCESS);
 }
 

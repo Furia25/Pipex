@@ -6,7 +6,7 @@
 /*   By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:41:21 by val               #+#    #+#             */
-/*   Updated: 2025/03/05 15:33:10 by vdurand          ###   ########.fr       */
+/*   Updated: 2025/03/06 16:05:32 by vdurand          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,15 @@ int	main(int argc, char **argv, char **envp)
 			return (perror("Here_doc File"), EXIT_FAILURE);
 		if (!read_heredoc(argv[2], hd_name))
 			exit(EXIT_FAILURE);
-		exit_code = pipex(argc, argv, envp, hd_name);
+		pipex(argc, argv, envp, hd_name);
 	}
 	else
-		exit_code = pipex(argc, argv, envp, NULL);
-	while (wait(NULL) > 0)
+		pipex(argc, argv, envp, NULL);
+	while (wait(&exit_code) > 0)
 		;
 	if (hd_name[0] != '\0')
 		rm_file(hd_name);
-	return (exit_code);
+	return ((exit_code >> 8) & 0xFF);
 }
 
 static int	get_temp_heredoc(char *name)
