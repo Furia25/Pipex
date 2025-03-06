@@ -6,7 +6,7 @@
 #    By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/13 23:20:17 by val               #+#    #+#              #
-#    Updated: 2025/02/20 13:43:24 by vdurand          ###   ########.fr        #
+#    Updated: 2025/03/06 16:37:34 by vdurand          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,25 +38,28 @@ endif
 
 MAIN_OBJ = $(OBJ_DIR)/$(notdir $(MAIN:.c=.o))
 
-CC = gcc
+CC = cc
 CFLAGS = -Werror -Wextra -Wall
 FTFLAGS = -L$(LIBFT_DIR) -lft
 LDFLAGS = $(FTFLAGS)
 INCLUDES = -I$(INC_DIR) -I$(LIBFT_DIR)
 
-all: $(NAME)
+all: makelibft $(NAME)
 
 bonus: $(NAME)
 
-$(NAME): $(OBJ) $(MAIN_OBJ) $(LIBFT_DIR)/libft.a
+$(NAME): $(OBJ) $(MAIN_OBJ) 
 	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	@echo "$(BG_GREEN)>>> Program $(NAME) compiled!$(RESET)"
 
-$(MAIN_OBJ): $(MAIN)
+makelibft:
+	$(MAKE) -C $(LIBFT_DIR)
+
+$(MAIN_OBJ): $(MAIN) 
 	@echo "$(BLUE)>>> Compiling $(MAIN)...$(RESET)"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $(MAIN) -o $(MAIN_OBJ)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile $(INC_DIR)/*.h | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile $(INC_DIR)/*.h $(LIBFT_DIR)/libft.a | $(OBJ_DIR) 
 	@echo "$(BLUE)>>> Compiling $<...$(RESET)"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -84,4 +87,4 @@ fclean: clean cleanlibs
 
 re: fclean all
 
-.PHONY: all cleanlibs clean fclean re
+.PHONY: all cleanlibs clean fclean re makelibft
