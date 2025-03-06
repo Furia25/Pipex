@@ -6,7 +6,7 @@
 #    By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/13 23:20:17 by val               #+#    #+#              #
-#    Updated: 2025/03/06 16:37:34 by vdurand          ###   ########.fr        #
+#    Updated: 2025/03/06 18:38:15 by vdurand          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,7 +53,10 @@ $(NAME): $(OBJ) $(MAIN_OBJ)
 	@echo "$(BG_GREEN)>>> Program $(NAME) compiled!$(RESET)"
 
 makelibft:
-	$(MAKE) -C $(LIBFT_DIR)
+	@echo "$(BLUE)>>> Compiling Libft...$(RESET)"
+	@$(MAKE) -C $(LIBFT_DIR)
+	@$(MAKE) bonus -C $(LIBFT_DIR)
+	@echo "$(GREEN)>>> Compilation achieved!$(RESET)"
 
 $(MAIN_OBJ): $(MAIN) 
 	@echo "$(BLUE)>>> Compiling $(MAIN)...$(RESET)"
@@ -66,12 +69,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile $(INC_DIR)/*.h $(LIBFT_DIR)/libft.a | $(
 $(OBJ_DIR):
 	@echo "$(YELLOW)>>> Directory '$(OBJ_DIR)' created!$(RESET)"
 	@mkdir -p $(OBJ_DIR)
-
-$(LIBFT_DIR)/libft.a:
-	@echo "$(BLUE)>>> Compiling Libft...$(RESET)"
-	@$(MAKE) -C $(LIBFT_DIR) > /dev/null 2>&1
-	@$(MAKE) bonus -C $(LIBFT_DIR) > /dev/null 2>&1
-	@echo "$(GREEN)>>> Compilation achieved!$(RESET)"
 
 cleanlibs:
 	@echo "$(YELLOW)>>> Cleaning libs...$(RESET)"
