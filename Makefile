@@ -6,7 +6,7 @@
 #    By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/13 23:20:17 by val               #+#    #+#              #
-#    Updated: 2025/03/10 13:22:27 by vdurand          ###   ########.fr        #
+#    Updated: 2025/03/10 13:31:41 by vdurand          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,7 +60,7 @@ INCLUDES = -I$(INC_DIR) -I$(LIBFT_DIR)
 
 all: makelibft $(NAME)
 
-bonus: $(NAME)
+bonus: makelibft $(NAME)
 
 $(NAME): $(OBJ) $(MAIN_OBJ) 
 	$(SILENT)$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
