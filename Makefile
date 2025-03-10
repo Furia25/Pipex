@@ -6,7 +6,7 @@
 #    By: vdurand <vdurand@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/13 23:20:17 by val               #+#    #+#              #
-#    Updated: 2025/03/06 18:38:15 by vdurand          ###   ########.fr        #
+#    Updated: 2025/03/10 13:22:27 by vdurand          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,20 @@ ifeq ($(MAKECMDGOALS),bonus)
 	MAIN = $(MAIN_DIR)/main_bonus.c
 endif
 
+VERBOSE = 0
+
+ifeq ($(VERBOSE),1)
+    SILENT =
+else
+    SILENT = @
+endif
+
+ifeq ($(VERBOSE),1)
+    DUMP_OUT =
+else
+    DUMP_OUT = > /dev/null 2>&1
+endif
+
 MAIN_OBJ = $(OBJ_DIR)/$(notdir $(MAIN:.c=.o))
 
 CC = cc
@@ -49,38 +63,38 @@ all: makelibft $(NAME)
 bonus: $(NAME)
 
 $(NAME): $(OBJ) $(MAIN_OBJ) 
-	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(SILENT)$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	@echo "$(BG_GREEN)>>> Program $(NAME) compiled!$(RESET)"
 
 makelibft:
 	@echo "$(BLUE)>>> Compiling Libft...$(RESET)"
-	@$(MAKE) -C $(LIBFT_DIR)
-	@$(MAKE) bonus -C $(LIBFT_DIR)
+	$(SILENT)$(MAKE) -C $(LIBFT_DIR) $(DUMP_OUT)
+	$(SILENT)$(MAKE) bonus -C $(LIBFT_DIR) $(DUMP_OUT)
 	@echo "$(GREEN)>>> Compilation achieved!$(RESET)"
 
 $(MAIN_OBJ): $(MAIN) 
 	@echo "$(BLUE)>>> Compiling $(MAIN)...$(RESET)"
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $(MAIN) -o $(MAIN_OBJ)
+	$(SILENT)$(CC) $(CFLAGS) $(INCLUDES) -c $(MAIN) -o $(MAIN_OBJ)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile $(INC_DIR)/*.h $(LIBFT_DIR)/libft.a | $(OBJ_DIR) 
 	@echo "$(BLUE)>>> Compiling $<...$(RESET)"
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(SILENT)$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OBJ_DIR):
 	@echo "$(YELLOW)>>> Directory '$(OBJ_DIR)' created!$(RESET)"
-	@mkdir -p $(OBJ_DIR)
+	$(SILENT)mkdir -p $(OBJ_DIR)
 
 cleanlibs:
 	@echo "$(YELLOW)>>> Cleaning libs...$(RESET)"
-	@$(MAKE) fclean -C $(LIBFT_DIR) > /dev/null 2>&1
+	$(SILENT)$(MAKE) fclean -C $(LIBFT_DIR) $(DUMP_OUT)
 
 clean:
 	@echo "$(YELLOW)>>> Cleaning objects$(RESET)"
-	@rm -rf $(OBJ_DIR) > /dev/null 2>&1
+	$(SILENT)rm -rf $(OBJ_DIR) $(DUMP_OUT)
 
 fclean: clean cleanlibs
 	@echo "$(YELLOW)>>> Cleaning executable...$(RESET)"
-	@rm -f $(NAME) > /dev/null 2>&1
+	$(SILENT)rm -f $(NAME) $(DUMP_OUT)
 
 re: fclean all
 
